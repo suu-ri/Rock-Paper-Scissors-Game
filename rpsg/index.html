@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<script src="js/jquery-2.1.3.min.js"></script>
+<link rel="stylesheet" href="css/sample.css">
+<title>Rock Paper Scissors Game</title>
+<style>
+  body{
+    margin:0;
+    padding:0;
+    text-align:left;
+    font-size: 32px;
+    width:100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* font-family: Arial, sans-serif; */
+  }
+  .dimmed {
+    opacity: 0.2;
+  }
+  .player-btn:disabled {
+    cursor: not-allowed;
+  }
+  .player-btn:disabled:not(.selected) {
+    opacity: 0.2;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+  <header>
+    <!-- <h1>Janken</h1> -->
+  </header>
+  
+  <main>
+    <div class="start">
+      <button id="start_btn">Start</button>
+    </div>
+    <div id="info">
+      <h2>Choose your hand</h2>
+      <h2>PC</h2>
+    </div>
+
+    <div class="hands">
+      <button id="rock_btn" class="player-btn" disabled></button>
+      <button id="scissors_btn" class="player-btn" disabled></button>
+      <button id="paper_btn" class="player-btn" disabled></button>
+      <button id="pc_hand"></button>
+    </div>
+
+    <div id="result_container">
+      <h2 id="result"></h2>  
+      <p id="stats"></p>
+    </div>
+
+    <div class="reset">
+      <button id="reset_btn">Reset</button>
+    </div>
+
+  </main>
+  
+  <footer></footer>
+</div>
+
+
+<script>
+//じゃんけん用のSCRIPTを書いてください
+
+document.addEventListener('DOMContentLoaded', function() {
+    const startBtn = document.getElementById('start_btn');
+    const pcHandBtn = document.getElementById('pc_hand');
+    const rockBtn = document.getElementById('rock_btn');
+    const scissorsBtn = document.getElementById('scissors_btn');
+    const paperBtn = document.getElementById('paper_btn');
+    const resetBtn = document.getElementById('reset_btn');
+    const resultDiv = document.getElementById('result');
+    const statsDiv = document.getElementById('stats');
+    
+    const images = [
+        'url("img/Rock.png")',
+        'url("img/Scissors.png")',
+        'url("img/Paper.png")'
+    ];
+
+    let pc_hand;
+    let player_hand; 
+    let currentIndex = 0;
+    let intervalId;
+    let stats = {
+        wins: 0,
+        losses: 0,
+        ties: 0
+    };
+    
+    let gameActive = false;
+    function enablePlayerButtons(enable) {
+        [rockBtn, scissorsBtn, paperBtn].forEach(btn => {
+            btn.disabled = !enable;
+            if (enable) {
+                btn.classList.remove('dimmed');
+            }
+        });
+    }
+
+    startBtn.addEventListener('click', function() {
+        if (intervalId) {
+            clearInterval(intervalId);
+        }
+        
+        intervalId = setInterval(function() {
+            pcHandBtn.style.backgroundImage = images[currentIndex];
+            currentIndex = (currentIndex + 1) % images.length;
+        }, 50); // 100毫秒切换一次图片
+
+        // 重置按钮样式
+        [rockBtn, scissorsBtn, paperBtn].forEach(btn => {
+            btn.classList.remove('dimmed', 'selected');
+        });
+
+        resultDiv.textContent = '';
+
+        gameActive = true;
+        enablePlayerButtons(true);
+        startBtn.disabled = true;
+    });
+    function stopAnimation() {
+        if (intervalId) {
+            clearInterval(intervalId);
+            intervalId = null;
+        }
+    }
+
+    function highlightButton(selectedBtn) {
+        [rockBtn, scissorsBtn, paperBtn].forEach(btn => {
+          btn.classList.remove('dimmed', 'selected');  
+          if (btn === selectedBtn) {
+                btn.classList.add('selected');
+            } else {
+                btn.classList.add('dimmed');
+            }
+        });
+    }
+
+    function handlePlayerChoice(selectedBtn) {
+      if (!gameActive) return;  
+      stopAnimation();
+      highlightButton(selectedBtn);
+      // 确定玩家选择
+      if (selectedBtn === rockBtn) {
+        player_hand = 0;
+      } else if (selectedBtn === scissorsBtn) {
+        player_hand = 1;
+      } else if (selectedBtn === paperBtn) {
+        player_hand = 2;
+      }
+
+      // 确定电脑选择
+      pc_hand = (currentIndex+2)%3;
+
+      // console.log("Player chose: " + player_hand);
+      // console.log("Computer chose: " + pc_hand);
+      judge(player_hand, pc_hand);
+      updateStats();
+
+      gameActive = false;
+      enablePlayerButtons(false);
+      selectedBtn.classList.add('selected');
+      startBtn.disabled = false;
+    }
+
+    function judge(player, computer) {
+      let result;
+      if (player == computer) {
+        result = "It's a tie!";
+        stats.ties++;
+      } else if ((player - computer + 3) % 3 == 1) {
+        result = "You lose!";
+        stats.losses++;
+      } else {
+        result = "You win!";
+        stats.wins++;
+      }
+      resultDiv.textContent = result;
+    }
+    function updateStats() {
+        const total = stats.wins + stats.losses + stats.ties;
+        const winRate = total > 0 ? (stats.wins / total * 100).toFixed(2) : 0;
+        statsDiv.innerHTML = `
+            Wins: ${stats.wins} | Losses: ${stats.losses} | Ties: ${stats.ties}<br>
+            Win Rate: ${winRate}%
+        `;
+    }
+
+    resetBtn.addEventListener('click', function() {
+        stats = { wins: 0, losses: 0, ties: 0 };
+        updateStats();
+        resultDiv.textContent = '';
+
+        gameActive = false;
+        enablePlayerButtons(false);
+        startBtn.disabled = false;
+        if (intervalId) {
+            clearInterval(intervalId);
+            intervalId = null;
+        }
+        pcHandBtn.style.backgroundImage = '';
+        [rockBtn, scissorsBtn, paperBtn].forEach(btn => {
+            btn.classList.remove('dimmed', 'selected');
+        });
+    });
+
+    [rockBtn, scissorsBtn, paperBtn].forEach(btn => {
+        btn.addEventListener('click', function() {
+            handlePlayerChoice(this);
+        });
+    });
+
+    updateStats(); // 初始化统计显示
+    enablePlayerButtons(false); // 初始状态下禁用玩家按钮
+});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+.wrapper{
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+header{
+    background-color: #fff;
+    border-bottom: 1px solid #ccc;
+    text-align: center;
+}
+main{
+    border-bottom:1px solid #ccc;
+}
+footer{
+    background-color: #fff;
+    border-bottom:1px solid #ccc;
+    text-align: center;
+}
+/* p{
+    font-size:200%;
+    text-align: center;
+    border-bottom:1px solid #fff;
+    height:200px;
+} */
+h2{
+    text-align: center;
+}
+.start, .reset{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 30px;
+}
+.reset{
+    margin-bottom: 30px;
+}
+#start_btn, #reset_btn{
+    width: 300px;
+    height: 100px;
+    font-size: 50px;
+    font-weight: bold;
+    border-radius: 50px;
+    /* letter-spacing: .03em; */
+}
+#start_btn:hover, #reset_btn:hover {
+    box-shadow: 0 0 20px rgba(33, 33, 33, 1);
+    cursor: pointer;
+}
+#rock_btn:hover, #scissors_btn:hover, #paper_btn:hover {
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(33, 33, 33, 1);
+}
+#info{
+    display: flex;
+    justify-content: flex-start;
+    gap: 35%;
+    padding-left: 10%;
+}
+.hands{
+    display: flex;
+    justify-content: flex-start;
+    gap: 5%;
+}
+#rock_btn{
+    background-image: url('../img/Rock.png');
+}
+#scissors_btn{
+    background-image: url('../img/Scissors.png');
+}
+#paper_btn{
+    background-image: url('../img/Paper.png');
+}
+#pc_hand{
+    background-image: url('../img/Rock.png');
+    margin-left: auto;
+    margin-right: 10%;
+    border: none;
+    background-color: transparent;
+    background-size: cover;
+    border-radius: 0%;
+}
+.hands button{
+    width: 15%;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    background-size: 80%;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+#result_container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 30px;
+    font-weight: bold;
+}
+#result{
+    font-size: 50px;
+}
+li:hover{
+    background: #0066CC;
+    color:#fff;
+}
